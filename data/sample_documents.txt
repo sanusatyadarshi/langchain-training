@@ -1,0 +1,121 @@
+LangChain Framework Overview
+
+LangChain is a powerful framework for developing applications powered by language models. It provides a standard interface for working with various LLM providers and includes tools for chaining operations, managing memory, and building complex workflows.
+
+The framework consists of several key components:
+1. LLMs and Chat Models - Interfaces for language models
+2. Prompts - Templates for structuring inputs
+3. Chains - Sequences of operations
+4. Memory - Systems for maintaining context
+5. Agents - Systems that can use tools
+6. Vector Stores - Databases for embeddings
+
+LangChain Expression Language (LCEL)
+
+LCEL is a declarative way to compose chains in LangChain. It was designed from day 1 to support putting prototypes in production with no code changes. LCEL provides several key benefits:
+
+- Streaming support for real-time applications
+- Async support for concurrent operations
+- Optimized parallel execution
+- Retries and fallbacks for reliability
+- Access to intermediate results for debugging
+- Input and output schemas for validation
+
+The basic syntax uses the pipe operator (|) to chain operations:
+chain = prompt | model | output_parser
+
+Retrieval-Augmented Generation (RAG)
+
+RAG is a technique that combines information retrieval with text generation. It allows language models to access external knowledge beyond their training data, making them more accurate and up-to-date.
+
+The RAG process involves:
+1. Document ingestion and chunking
+2. Vector embedding creation
+3. Vector store indexing
+4. Query processing and retrieval
+5. Context-aware generation
+
+Common RAG architectures include:
+- Simple RAG: Query → Retrieve → Generate
+- Conversational RAG: Query + History → Retrieve → Generate
+- Agentic RAG: Query → Plan → Retrieve → Reason → Generate
+
+Memory Systems in LangChain
+
+Memory systems allow chatbots to maintain conversation context across multiple interactions. LangChain provides several types of memory:
+
+1. ConversationBufferMemory: Stores all messages in the conversation
+2. ConversationSummaryMemory: Summarizes old messages to save space
+3. ConversationBufferWindowMemory: Keeps only the last K messages
+4. ConversationEntityMemory: Tracks specific entities mentioned
+5. ConversationKGMemory: Maintains a knowledge graph of the conversation
+
+Memory can be used with chains, agents, and other LangChain components to create more natural conversational experiences.
+
+Vector Stores and Embeddings
+
+Vector stores are specialized databases for storing and searching high-dimensional vectors. In LangChain applications, they typically store embeddings of documents for semantic similarity search.
+
+Popular vector store options include:
+- FAISS: Facebook's library for efficient similarity search
+- Chroma: Open-source embedding database
+- Pinecone: Managed vector database service
+- Weaviate: Open-source vector search engine
+
+Embeddings convert text into numerical vectors that capture semantic meaning. Common embedding models include:
+- OpenAI text-embedding-ada-002
+- HuggingFace sentence-transformers
+- Cohere embed models
+
+Document Loaders and Text Splitters
+
+Document loaders help ingest content from various sources:
+- TextLoader: Plain text files
+- PyPDFLoader: PDF documents
+- CSVLoader: CSV files
+- WebBaseLoader: Web pages
+- DirectoryLoader: Multiple files from directories
+
+Text splitters break large documents into smaller chunks:
+- RecursiveCharacterTextSplitter: General-purpose splitting
+- CharacterTextSplitter: Split on specific characters
+- TokenTextSplitter: Split based on token counts
+- MarkdownHeaderTextSplitter: Split markdown by headers
+
+Agents and Tools
+
+Agents are systems that can reason about which actions to take and use tools to accomplish tasks. They combine the reasoning capabilities of language models with the ability to interact with external systems.
+
+Common agent types:
+- Zero-shot ReAct: Reasons and acts based on tool descriptions
+- Conversational ReAct: Maintains conversation memory
+- Plan-and-execute: Plans a sequence of actions then executes them
+
+Tools can include:
+- Search engines (Google, DuckDuckGo)
+- APIs (REST, GraphQL)
+- Databases (SQL, NoSQL)
+- File systems
+- Custom functions
+
+Output Parsers
+
+Output parsers structure the responses from language models into specific formats. They ensure that model outputs conform to expected schemas and data types.
+
+Types of output parsers:
+- PydanticOutputParser: Uses Pydantic models for validation
+- JSONOutputParser: Parses JSON responses
+- ListOutputParser: Extracts lists from text
+- DatetimeOutputParser: Extracts dates and times
+- EnumOutputParser: Validates enumerated values
+
+Production Considerations
+
+When deploying LangChain applications to production:
+
+1. Error Handling: Implement robust error handling and fallbacks
+2. Rate Limiting: Respect API rate limits and implement backoff strategies
+3. Caching: Cache embeddings and frequent queries
+4. Monitoring: Track performance, costs, and user satisfaction
+5. Security: Validate inputs and protect sensitive data
+6. Scalability: Design for concurrent users and high throughput
