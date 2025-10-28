@@ -1,4 +1,4 @@
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 
 chat_template = ChatPromptTemplate.from_messages([
     ("system", "You are a {role} expert with {years} years of experience."),
