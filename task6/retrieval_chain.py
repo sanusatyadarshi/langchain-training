@@ -175,15 +175,17 @@ mmr_docs = mmr_retriever.invoke("LangChain components")
 for i, doc in enumerate(mmr_docs):
     print(f"{i+1}. {doc.page_content[:100]}...")
 
-# Similarity threshold retriever
-threshold_retriever = vector_store.as_retriever(
-    search_type="similarity_score_threshold",
-    search_kwargs={"score_threshold": 0.7}
+# Top-k retriever (returns only top k most similar)
+topk_retriever = vector_store.as_retriever(
+    search_type="similarity",
+    search_kwargs={"k": 2}  # Only return top 2 results
 )
 
-print("\nThreshold Retrieval for 'machine learning':")
-threshold_docs = threshold_retriever.invoke("machine learning")
-print(f"Found {len(threshold_docs)} documents above threshold")
+print("\nTop-K Retrieval for 'machine learning' (k=2):")
+topk_docs = topk_retriever.invoke("machine learning")
+print(f"Found {len(topk_docs)} documents")
+for i, doc in enumerate(topk_docs):
+    print(f"  {i+1}. {doc.metadata.get('source', 'unknown')}: {doc.page_content[:80]}...")
 
 # Filter-based retrieval
 filter_retriever = vector_store.as_retriever(
