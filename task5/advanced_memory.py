@@ -4,7 +4,6 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.output_parsers import StrOutputParser
-from langchain.memory import ConversationSummaryMemory
 from langchain_core.messages import HumanMessage, AIMessage
 
 # Setup model
@@ -13,6 +12,34 @@ model = ChatOpenAI(
     temperature=0.7,
     base_url=os.environ.get("OPENAI_API_BASE")
 )
+
+# Custom ConversationSummaryMemory implementation using modern LangChain
+class ConversationSummaryMemory:
+    """Modern implementation maintaining the original interface"""
+    def __init__(self, llm, return_messages=True):
+        self.llm = llm
+        self.return_messages = return_messages
+        self.chat_memory = ChatMessageHistory()
+        self.summary_prompt = ChatPromptTemplate.from_template(
+            "Progressively summarize the lines of conversation provided, "
+            "adding onto the previous summary returning a new summary.\n\n"
+            "Current summary:\n{summary}\n\n"
+            "New lines of conversation:\n{new_lines}\n\n"
+            "New summary:"
+        )
+
+    def predict_new_summary(self, messages, existing_summary):
+        """Generate a summary of the conversation"""
+        conversation_text = "\n".join([
+            f"{'Human' if isinstance(msg, HumanMessage) else 'AI'}: {msg.content}"
+            for msg in messages
+        ])
+        chain = self.summary_prompt | self.llm | StrOutputParser()
+        summary = chain.invoke({
+            "summary": existing_summary,
+            "new_lines": conversation_text
+        })
+        return summary
 
 # Summary Memory Implementation
 print("=== Summary Memory ===")
