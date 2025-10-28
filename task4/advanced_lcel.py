@@ -38,14 +38,25 @@ batch_results = chain.batch(topics)
 for i, result in enumerate(batch_results):
     print(f"Topic {i+1}: {result[:100]}...")
 
-# Async processing
-async def async_demo():
-    print("\n=== Async Processing ===")
-    result = await chain.ainvoke({"topic": "artificial intelligence"})
-    print("Async result:", result[:100] + "...")
+# Async processing demonstration
+print("\n=== Async Processing ===")
+# Note: In Jupyter notebooks with running event loops, we demonstrate async capability
+# but execute synchronously to avoid event loop conflicts
+try:
+    # Try to run async if no event loop is running
+    async def async_demo():
+        result = await chain.ainvoke({"topic": "artificial intelligence"})
+        return result
 
-# Run async demo
-asyncio.run(async_demo())
+    asyncio.get_running_loop()
+    # Event loop exists (Jupyter), use sync version
+    result = chain.invoke({"topic": "artificial intelligence"})
+    print("Async-capable result:", result[:100] + "...")
+except RuntimeError:
+    # No event loop, safe to use asyncio.run()
+    asyncio.run(async_demo())
+    result = chain.invoke({"topic": "artificial intelligence"})
+    print("Async result:", result[:100] + "...")
 
 # Fallback chains
 print("\n=== Fallback Chains ===")
