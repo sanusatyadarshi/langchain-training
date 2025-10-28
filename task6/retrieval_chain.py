@@ -2,9 +2,10 @@ import os
 from langchain_openai import ChatOpenAI
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain.chains import RetrievalQA
 from langchain_core.prompts import PromptTemplate
-from langchain.schema import Document
+from langchain_core.documents import Document
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
 
 # Setup model
 model = ChatOpenAI(
@@ -95,15 +96,42 @@ Question: {question}
 Answer:"""
 )
 
-# Create RetrievalQA chain
+# Create RAG chain using modern LCEL
 print("\n=== Creating RetrievalQA Chain ===")
-qa_chain = RetrievalQA.from_chain_type(
-    llm=model,
-    chain_type="stuff",
-    retriever=retriever,
-    chain_type_kwargs={"prompt": custom_prompt},
-    return_source_documents=True
+
+def format_docs(docs):
+    """Format retrieved documents for the prompt"""
+    return "\n\n".join(doc.page_content for doc in docs)
+
+# Build the LCEL chain
+rag_chain = (
+    {
+        "context": retriever | format_docs,
+        "question": RunnablePassthrough()
+    }
+    | custom_prompt
+    | model
+    | StrOutputParser()
 )
+
+# Wrapper class to maintain RetrievalQA interface
+class RetrievalQAWrapper:
+    """Wrapper to maintain compatibility with old RetrievalQA interface"""
+    def __init__(self, chain, retriever):
+        self.chain = chain
+        self.retriever = retriever
+
+    def __call__(self, inputs):
+        """Execute chain and return result with source documents"""
+        query = inputs.get("query")
+        result = self.chain.invoke(query)
+        source_docs = self.retriever.get_relevant_documents(query)
+        return {
+            "result": result,
+            "source_documents": source_docs
+        }
+
+qa_chain = RetrievalQAWrapper(rag_chain, retriever)
 
 # Test questions
 test_questions = [
