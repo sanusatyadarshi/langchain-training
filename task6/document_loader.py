@@ -1,5 +1,5 @@
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 
 # Sample documents for demonstration
 sample_docs = [
@@ -132,7 +132,7 @@ pip install langchain
 ## Basic Usage
 Here's a simple example:
 ```python
-from langchain.llms import OpenAI
+from langchain_openai import OpenAI
 llm = OpenAI()
 ```
 
