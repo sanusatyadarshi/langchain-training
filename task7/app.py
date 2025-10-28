@@ -104,7 +104,7 @@ class RetrievalQAWrapper:
         """Execute chain and return result with source documents"""
         query = inputs.get("query")
         result = self.chain.invoke(query)
-        source_docs = self.retriever.get_relevant_documents(query)
+        source_docs = self.retriever.invoke(query)
         return {
             "result": result,
             "source_documents": source_docs

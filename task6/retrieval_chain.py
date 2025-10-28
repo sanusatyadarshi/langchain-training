@@ -76,7 +76,7 @@ retriever = vector_store.as_retriever(
 # Test retrieval
 print("\n=== Testing Retrieval ===")
 test_query = "What is LCEL?"
-retrieved_docs = retriever.get_relevant_documents(test_query)
+retrieved_docs = retriever.invoke(test_query)
 
 print(f"Query: {test_query}")
 print(f"Retrieved {len(retrieved_docs)} documents:")
@@ -125,7 +125,7 @@ class RetrievalQAWrapper:
         """Execute chain and return result with source documents"""
         query = inputs.get("query")
         result = self.chain.invoke(query)
-        source_docs = self.retriever.get_relevant_documents(query)
+        source_docs = self.retriever.invoke(query)
         return {
             "result": result,
             "source_documents": source_docs
@@ -171,7 +171,7 @@ mmr_retriever = vector_store.as_retriever(
 )
 
 print("MMR Retrieval for 'LangChain components':")
-mmr_docs = mmr_retriever.get_relevant_documents("LangChain components")
+mmr_docs = mmr_retriever.invoke("LangChain components")
 for i, doc in enumerate(mmr_docs):
     print(f"{i+1}. {doc.page_content[:100]}...")
 
@@ -182,7 +182,7 @@ threshold_retriever = vector_store.as_retriever(
 )
 
 print("\nThreshold Retrieval for 'machine learning':")
-threshold_docs = threshold_retriever.get_relevant_documents("machine learning")
+threshold_docs = threshold_retriever.invoke("machine learning")
 print(f"Found {len(threshold_docs)} documents above threshold")
 
 # Filter-based retrieval
@@ -191,7 +191,7 @@ filter_retriever = vector_store.as_retriever(
 )
 
 print("\nFiltered Retrieval for memory-related content:")
-filtered_docs = filter_retriever.get_relevant_documents("conversation context")
+filtered_docs = filter_retriever.invoke("conversation context")
 for doc in filtered_docs:
     print(f"- {doc.page_content}")
 
